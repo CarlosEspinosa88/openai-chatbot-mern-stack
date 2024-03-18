@@ -5,8 +5,7 @@ config({ path: './.env'})
 
 async function connectToDataBase() {
   try {
-    await connect(process.env.MONGODB_URL);
-    
+    await connect(process.env.MONGODB_URL); 
   } catch (error) {
     console.log(error)
     throw new Error("Cannot connect to mongo DB")
