@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express"
 import User from "../models/User.js";
 import { hash, compare } from 'bcrypt'
+import { createToken } from "../utils/token-manager.js"
+import { AUTH_TOKEN } from "../utils/constants.js"
 
 export const getAllUsers = async (
   req: Request,
@@ -33,6 +35,27 @@ export const userSignup = async (
     const user = new User({ name, email, password: hashedPass})
     
     await user.save()
+
+    // create token and store cookies
+    res.clearCookie(AUTH_TOKEN, {
+      path: '/',
+      domain: "localhost",
+      httpOnly: true,
+      signed: true
+    })
+
+    const token = createToken(user._id.toString(), user.email, "7d")
+    let expires = new Date()
+    expires.setDate(expires.getDate() + 7)
+
+    res.cookie(AUTH_TOKEN, token, {
+      path: '/',
+      domain: "localhost",
+      expires,
+      httpOnly: true,
+      signed: true
+    })
+
     return res.status(201).json({ messages: "OK", id: user._id.toString()})
   } catch (error) {
     console.log(error)
@@ -58,6 +81,25 @@ export const userLogin = async (
     if (!isPasswordCorrect) {
       return res.status(403).send("Incorrect password")
     }
+
+    res.clearCookie(AUTH_TOKEN, {
+      path: '/',
+      domain: "localhost",
+      httpOnly: true,
+      signed: true
+    })
+
+    const token = createToken(user._id.toString(), user.email, "7d")
+    let expires = new Date()
+    expires.setDate(expires.getDate() + 7)
+
+    res.cookie(AUTH_TOKEN, token, {
+      path: '/',
+      domain: "localhost",
+      expires,
+      httpOnly: true,
+      signed: true
+    })
 
     return res.status(200).json({ messages: "OK", id: user._id.toString()})
   } catch (error) {
