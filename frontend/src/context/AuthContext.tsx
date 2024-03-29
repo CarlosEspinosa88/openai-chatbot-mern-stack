@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext, ReactNode } from "react";
+import { loginUser } from "../helpers/api";
 
 type User = {
   name: string;
@@ -19,21 +20,25 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
   const [ user, setUser ] = useState(null)
   const [ isLoggedIn, setIsLoggedIn] = useState(false)
   
-  console.log({ setUser, setIsLoggedIn })
-
   useEffect(() => {
     // fetch cookies validations
   }, [])
 
-  function login(email: string, password: string) {
-    console.log({ email, password})
+  const login = async (email: string, password: string) => {
+    console.log("CONTEXT", { email, password })
+    const data = await loginUser( email, password)
+    
+    if (data) {
+      setIsLoggedIn(true)
+      setUser({ email: data.email, password: data.password })
+    }
   }
 
-  function signup(name: string, email: string,  password: string) {
+  const signup = (name: string, email: string,  password: string) => {
     console.log({ name, email, password})
   }
 
-  function logout() {}
+  const logout = () => {}
 
   const value = {
     user,
