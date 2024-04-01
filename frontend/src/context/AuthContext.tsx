@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext, ReactNode } from "react";
 import { loginUser } from "../helpers/api";
+import { checkAuthStatus } from "../helpers/api"
 
 type User = {
   name: string;
@@ -21,7 +22,16 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
   const [ isLoggedIn, setIsLoggedIn] = useState(false)
   
   useEffect(() => {
-    // fetch cookies validations
+    async function checkUserStatus() {
+      const data = await checkAuthStatus()
+
+      if (data) {
+        setIsLoggedIn(true)
+        setUser({ email: data.email, password: data.password })
+      }
+    }
+
+    checkUserStatus()
   }, [])
 
   const login = async (email: string, password: string) => {
