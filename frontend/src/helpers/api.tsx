@@ -1,11 +1,8 @@
 import axios from "axios";
 
 export const loginUser = async (email: string, password: string) => {
-  console.log("API", {email, password})
-
   try {
     const res = await axios.post('/user/login', { email, password });    
-    console.log("RES", res)
     
     if (res.status !== 200) { 
       throw new Error("Unable to login");
@@ -14,8 +11,18 @@ export const loginUser = async (email: string, password: string) => {
     const data = await res.data;
 
     return data
-
   } catch (error) {
     throw new Error("Unable to login", error);
   }
+}
+
+export const checkAuthStatus = async () => {
+  const res = await axios.get('/user/auth-status');    
+  
+  if (res.status !== 200) { 
+    throw new Error("Unable to authenticate");
+  }
+
+  const data = await res.data;
+  return data
 }
