@@ -30,7 +30,7 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  chat: [chatSchema]
+  chats: [chatSchema]
 })
 
 export default model("User", userSchema)
