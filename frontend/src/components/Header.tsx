@@ -14,7 +14,7 @@ export default function Header() {
         <div>
           {auth?.isLoggedIn ? (
             <>
-              <NavigationLink to='/chat' text='Go to chat' bg='#00fffc' textColor='black' />
+              <NavigationLink to='/chats' text='Go to chat' bg='#00fffc' textColor='black' />
               <NavigationLink to='/' text='Logout' bg='#51538f' textColor='white' onClick={auth?.logout} />
             </>
           ) : (
