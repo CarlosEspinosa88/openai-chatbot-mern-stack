@@ -1,19 +1,44 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { Box, Avatar, Typography, Button, IconButton } from "@mui/material";
 import { IoMdSend } from "react-icons/io";
 import red from "@mui/material/colors/red";
 import useAuth from '../hooks/useAuth';
 import ChatItem from '../components/chats/ChatItem';
+import { sendChatRequest } from '../helpers/api'
 
-const mockedChats = [
-  {"role": "system", "content": "You are a helpful assistant."},
-  {"role": "user", "content": "Who won the world series in 2020?"},
-  {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
-  {"role": "user", "content": "Where was it played?"}
-]
+// const mockedChats = [
+//   {"role": "system", "content": "You are a helpful assistant."},
+//   {"role": "user", "content": "Who won the world series in 2020?"},
+//   {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
+//   {"role": "user", "content": "Where was it played?"}
+// ]
+
+type ChatItemType = {
+  content: string;
+  role: "user" | "assistant";
+}
 
 export default function Chats() {
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const [chatMessages, setChatMessages] = useState<ChatItemType[]>([])
   const auth = useAuth()
+
+  const handleSubmit = async () => {
+    const content = inputRef.current?.value as string
+
+    // if (inputRef && inputRef.current) {
+    //   inputRef.current.value = ""
+    // }
+    
+    const chatMessage: ChatItemType = { role: "user", content };
+    setChatMessages((preState) => [...preState, chatMessage])
+
+    console.log("FRONT", content)
+    const newChat = await sendChatRequest(content)
+    setChatMessages([ ...newChat.chats ])
+
+    
+  }
 
   return (
     <Box
@@ -114,7 +139,7 @@ export default function Chats() {
             scrollBehavior: "smooth",
           }}
         >
-          {mockedChats.map((chat, index)=> (
+          {chatMessages.map((chat, index)=> (
             <ChatItem 
               key={index}
               role={chat.role}
@@ -134,6 +159,7 @@ export default function Chats() {
           {" "}
           <input
             type="text"
+            ref={inputRef}
             style={{
               width: "100%",
               backgroundColor: "transparent",
@@ -144,7 +170,8 @@ export default function Chats() {
               fontSize: "20px",
             }}
           />
-          <IconButton 
+          <IconButton
+            onClick={handleSubmit}
             sx={{ color: "white", mx: 1 }}
           >
             <IoMdSend />
