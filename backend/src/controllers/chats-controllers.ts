@@ -1,7 +1,15 @@
 import { Request, Response, NextFunction, RequestHandler } from "express"
-import { configureOpenAI } from "../config/openai.js";
-import { ChatCompletionRequestMessage, OpenAIApi } from "openai"
+import OpenAI from "openai"
+// import { configureOpenAI } from "../config/openai.js";
 import User from "../models/User.js";
+import { config } from "dotenv"
+
+config({ path: './.env'})
+
+const configOpenAI = new OpenAI({
+  apiKey: process.env.OPEN_AI_SECRET,
+  organization: process.env.OPEN_AI_ORGANIZATION_ID,
+})
 
 export const generateChatCompletion = async (
   req: Request,
@@ -18,21 +26,22 @@ export const generateChatCompletion = async (
     }
   
     // grab all chats from the user
-    const chats = user.chats.map(({ role, content }) => ({ role, content })) as ChatCompletionRequestMessage[]
+    const chats = user.chats.map(({ role, content }) => ({ role, content })) as OpenAI.ChatCompletionUserMessageParam[]
     chats.push({ content: message, role: "user" })
     user.chats.push({ content: message, role: "user" })
     
     // send all chat to the openai api
-    const config = await configureOpenAI()
-    const openaiResponse = new OpenAIApi(config)
-    const chatResponse = await openaiResponse.createChatCompletion({
-      model: "gpt-3.5-turbo",
+    // const config = await configureOpenAI()
+    // const openaiResponse = new OpenAIApi(config)
+
+    const params: OpenAI.Chat.ChatCompletionCreateParams = {
       messages: chats,
-      max_tokens: 14 
-     })
+      model: "gpt-3.5-turbo",
+    }; 
+    const chatResponse = await configOpenAI.chat.completions.create(params)
 
     // get latest response
-    user.chats.push(chatResponse.data.choices[0].message)
+    user.chats.push(chatResponse.choices[0].message)
     await user.save()
   
     // return the chats and the status
