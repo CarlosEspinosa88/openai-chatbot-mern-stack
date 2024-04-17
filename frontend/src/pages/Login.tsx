@@ -17,7 +17,6 @@ export default function Login() {
 
     try {
       toast.loading("Signing In", { id: "login"})
-      console.log("HANDLE", { email, password })
       await auth?.login(email, password)
       toast.success("Signed In Succesfully", { id: "login"})
       

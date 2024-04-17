@@ -33,7 +33,6 @@ export default function Chats() {
     const chatMessage: ChatItemType = { role: "user", content };
     setChatMessages((preState) => [...preState, chatMessage])
 
-    console.log("FRONT", content)
     const newChat = await sendChatRequest(content)
     setChatMessages([ ...newChat.chats ])
 

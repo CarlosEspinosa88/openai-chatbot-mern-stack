@@ -35,7 +35,6 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
   }, [])
 
   const login = async (email: string, password: string) => {
-    console.log("CONTEXT", { email, password })
     const data = await loginUser( email, password)
     
     if (data) {
