@@ -1,6 +1,5 @@
-import { Request, Response, NextFunction, RequestHandler } from "express"
+import { Request, Response, NextFunction } from "express"
 import OpenAI from "openai"
-// import { configureOpenAI } from "../config/openai.js";
 import User from "../models/User.js";
 import { config } from "dotenv"
 
@@ -15,35 +14,34 @@ export const generateChatCompletion = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => { 
+) => {
   const { message } = req.body;
 
   try {
     const user = await User.findById(res.locals.jwtData.id)
-  
+
     if (!user) {
       return res.status(401).json({ message: "User not registered or Tken malfunctioned" })
     }
-  
+
     // grab all chats from the user
     const chats = user.chats.map(({ role, content }) => ({ role, content })) as OpenAI.ChatCompletionUserMessageParam[]
     chats.push({ content: message, role: "user" })
     user.chats.push({ content: message, role: "user" })
-    
-    // send all chat to the openai api
-    // const config = await configureOpenAI()
-    // const openaiResponse = new OpenAIApi(config)
 
+    // send all chat to the openai api
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
       messages: chats,
       model: "gpt-3.5-turbo",
-    }; 
+      // n: 1
+    };
+
     const chatResponse = await configOpenAI.chat.completions.create(params)
 
     // get latest response
-    user.chats.push(chatResponse.choices[0].message)
+    user.chats.push(chatResponse.choices[0]?.message)
     await user.save()
-  
+
     // return the chats and the status
     return res.status(200).json({ chats: user.chats })
   } catch (error) {
