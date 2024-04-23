@@ -1,17 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useLayoutEffect } from 'react'
 import { Box, Avatar, Typography, Button, IconButton } from "@mui/material";
 import { IoMdSend } from "react-icons/io";
+import toast from 'react-hot-toast';
 import red from "@mui/material/colors/red";
 import useAuth from '../hooks/useAuth';
 import ChatItem from '../components/chats/ChatItem';
-import { sendChatRequest } from '../helpers/api'
-
-// const mockedChats = [
-//   {"role": "system", "content": "You are a helpful assistant."},
-//   {"role": "user", "content": "Who won the world series in 2020?"},
-//   {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
-//   {"role": "user", "content": "Where was it played?"}
-// ]
+import { getUserChats, sendChatRequest } from '../helpers/api'
 
 type ChatItemType = {
   content: string;
@@ -26,18 +20,29 @@ export default function Chats() {
   const handleSubmit = async () => {
     const content = inputRef.current?.value as string
 
-    // if (inputRef && inputRef.current) {
-    //   inputRef.current.value = ""
-    // }
+    if (inputRef && inputRef.current) {
+      inputRef.current.value = ""
+    }
     
     const chatMessage: ChatItemType = { role: "user", content };
     setChatMessages((preState) => [...preState, chatMessage])
 
     const newChat = await sendChatRequest(content)
-    setChatMessages([ ...newChat.chats ])
-
-    
+    setChatMessages([...newChat.chats])
   }
+
+  useLayoutEffect(() => {
+    if (auth?.isLoggedIn && auth?.user) {
+      toast.loading('Loading chats', { id: 'loadchats'})
+      getUserChats().then((data) => {
+        setChatMessages([...data.chats])
+        toast.success('Successfully loaded chats', { id: 'loadchats'})
+      }).catch((err) => {
+        console.log(err)
+        toast.error('Loading failed', { id: 'loadchats'})
+      })
+    }
+  }, [auth?.isLoggedIn, auth?.user])
 
   return (
     <Box
