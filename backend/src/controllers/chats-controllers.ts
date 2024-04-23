@@ -22,7 +22,7 @@ export const generateChatCompletion = async (
 
     if (!user) {
       return res.status(401).json({ message: "User not registered or Tken malfunctioned" })
-    }
+    } 
 
     // grab all chats from the user
     const chats = user.chats.map(({ role, content }) => ({ role, content })) as OpenAI.ChatCompletionUserMessageParam[]
@@ -47,5 +47,28 @@ export const generateChatCompletion = async (
   } catch (error) {
     console.log(error)
     return res.status(500).json({ message: "Something went wrong"})
+  }
+}
+
+export const sendChatToUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(res.locals.jwtData.id)
+
+    if (!user) {
+      return res.status(401).send("User not registered or Token malfunctioned")
+    }
+
+    if (user._id.toString() !== res.locals.jwtData.id ) {
+      return res.status(401).send("Permission didn't match")
+    }
+
+    return res.status(200).json({ messages: "OK", chats: user.chats })
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ message: "ERROR", cause:  error.message})
   }
 }
