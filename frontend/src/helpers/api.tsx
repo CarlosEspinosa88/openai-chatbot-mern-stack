@@ -3,7 +3,7 @@ import axios from "axios";
 export const loginUser = async (email: string, password: string) => {
   try {
     const res = await axios.post('/user/login', { email, password });    
-    
+
     if (res.status !== 200) { 
       throw new Error("Unable to login");
     }
@@ -24,6 +24,7 @@ export const checkAuthStatus = async () => {
   }
 
   const data = await res.data;
+
   return data
 }
 
@@ -41,12 +42,24 @@ export const sendChatRequest = async (message: string) => {
 
 export const getUserChats = async () => {
   const res = await axios.get('/chats/all-chats')
-  console.log('RES', res)
 
   if (res.status !== 200) { 
-    throw new Error("Unable to Chat");
+    throw new Error("Unable to send chat");
   }
 
   const data = await res.data;
+
+  return data
+}
+
+export const deleteUserChats = async () => {
+  const res = await axios.delete('/chats/delete')
+
+  if (res.status !== 200) {
+    throw new Error("Unable to delete chats");
+  }
+
+  const data = await res.data;
+
   return data
 }
