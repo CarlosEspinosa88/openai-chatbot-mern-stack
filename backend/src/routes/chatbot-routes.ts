@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { verifyToken } from '../utils/token-manager.js'
 import { validate, chatCompletionValidator } from '../utils/validators.js'
-import { generateChatCompletion, sendChatToUser } from '../controllers/chats-controllers.js'
+import { deleteChats, generateChatCompletion, sendChatToUser } from '../controllers/chats-controllers.js'
 
 const chatbotRoutes = Router()
 
@@ -16,6 +16,12 @@ chatbotRoutes.get(
   "/all-chats",
   verifyToken,
   sendChatToUser
+)
+
+chatbotRoutes.delete(
+  "/delete",
+  verifyToken,
+  deleteChats
 )
 
 export default chatbotRoutes
