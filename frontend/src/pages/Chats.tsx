@@ -1,4 +1,4 @@
-import React, { useRef, useState, useLayoutEffect } from 'react'
+import React, { useRef, useState, useLayoutEffect, useEffect } from 'react'
 import { Box, Avatar, Typography, Button, IconButton } from "@mui/material";
 import { IoMdSend } from "react-icons/io";
 import toast from 'react-hot-toast';
@@ -6,6 +6,7 @@ import red from "@mui/material/colors/red";
 import useAuth from '../hooks/useAuth';
 import ChatItem from '../components/chats/ChatItem';
 import { deleteUserChats, getUserChats, sendChatRequest } from '../helpers/api'
+import { useNavigate } from 'react-router-dom';
 
 type ChatItemType = {
   content: string;
@@ -13,9 +14,10 @@ type ChatItemType = {
 }
 
 export default function Chats() {
+  const auth = useAuth()
+  const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [chatMessages, setChatMessages] = useState<ChatItemType[]>([])
-  const auth = useAuth()
 
   const handleSubmit = async () => {
     const content = inputRef.current?.value as string
@@ -31,7 +33,7 @@ export default function Chats() {
     setChatMessages([...newChat.chats])
   }
 
-  const handleDelereChats = async() => {
+  const handleDeleteChats = async() => {
     try {
       toast.loading("Deleting Chats", { id: "deletechats"})
       await deleteUserChats()
@@ -56,6 +58,13 @@ export default function Chats() {
       })
     }
   }, [auth?.isLoggedIn, auth?.user])
+
+  useEffect(() => {
+    if (!auth?.isLoggedIn) {
+      navigate("./login")
+    }
+
+  }, [auth?.isLoggedIn, navigate])
 
   return (
     <Box
@@ -106,7 +115,7 @@ export default function Chats() {
             Education, etc. But avoid sharing personal information.
           </Typography>
           <Button
-            onClick={handleDelereChats}
+            onClick={handleDeleteChats}
             sx={{
               width: "200px",
               my: "auto",

@@ -20,7 +20,7 @@ export default function Header() {
           ) : (
             <>
               <NavigationLink to='/login' text='Login' bg='#00fffc' textColor='black' />
-              <NavigationLink to='/signup' text='Signup' bg='#51538f' textColor='white' onClick={auth?.logout} />
+              <NavigationLink to='/signup' text='Signup' bg='#51538f' textColor='white' />
             </>
           )}
         </div>
