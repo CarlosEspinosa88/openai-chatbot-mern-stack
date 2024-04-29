@@ -1,12 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { IoIosLogIn } from "react-icons/io";
 import { Box, Typography, Button } from '@mui/material'
 import { toast } from "react-hot-toast"
+import { useNavigate } from 'react-router-dom';
 import CustomizedInput from '../components/shared/CustomizedInput'
 import useAuth from '../hooks/useAuth';
 
 export default function Login() {
   const auth = useAuth()
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -25,6 +27,12 @@ export default function Login() {
       console.log(error)
     }
   }
+
+  useEffect(() => {
+    if (auth?.user) {
+      return navigate("/chats")
+    }
+  }, [auth?.user, navigate])
 
   return (
     <Box width={'100%'} height={'100%'} display={"flex"} flex={1}>

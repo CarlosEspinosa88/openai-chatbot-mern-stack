@@ -16,6 +16,18 @@ export const loginUser = async (email: string, password: string) => {
   }
 }
 
+export const logoutUser = async () => {
+  const res = await axios.get('/user/logout');    
+
+  if (res.status !== 200) { 
+    throw new Error("Unable to login");
+  }
+
+  const data = await res.data;
+
+  return data
+}
+
 export const checkAuthStatus = async () => {
   const res = await axios.get('/user/auth-status');    
   
