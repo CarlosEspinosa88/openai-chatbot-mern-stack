@@ -16,6 +16,22 @@ export const loginUser = async (email: string, password: string) => {
   }
 }
 
+export const singUpUser = async (name: string, email: string, password: string) => {
+  try {
+    const res = await axios.post('/user/singup', { name, email, password });    
+
+    if (res.status !== 200) { 
+      throw new Error("Unable to signup");
+    }
+
+    const data = await res.data;
+
+    return data
+  } catch (error) {
+    throw new Error("Unable to login", error);
+  }
+}
+
 export const logoutUser = async () => {
   const res = await axios.get('/user/logout');    
 
