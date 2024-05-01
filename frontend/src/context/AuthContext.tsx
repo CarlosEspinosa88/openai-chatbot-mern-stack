@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext, ReactNode } from "react";
-import { loginUser, logoutUser, singUpUser } from "../helpers/api";
+import { loginUser, logoutUser, signupUser } from "../helpers/api";
 import { checkAuthStatus } from "../helpers/api"
 
 type User = {
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
 
   const signup = async (name: string, email: string,  password: string) => {
     console.log({ name, email, password})
-    const data = await singUpUser(name, email, password)
+    const data = await signupUser(name, email, password)
 
     if (data) {
       setIsLoggedIn(false)
