@@ -11,7 +11,7 @@ type UserAuth = {
   isLoggedIn: boolean;
   user: User | null;
   login: (email: string,  password: string) => Promise<void>
-  signup: (name: string, email: string,  password: string) => Promise<void>
+  signup: (name: string, email: string, password: string) => Promise<void>
   logout: () => Promise<void>
 }
 
@@ -43,14 +43,12 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
     }
   }
 
-  const signup = async (name: string, email: string,  password: string) => {
-    console.log({ name, email, password})
+  const signup = async (name: string, email: string, password: string) => {
     const data = await signupUser(name, email, password)
 
     if (data) {
-      setIsLoggedIn(false)
-      setUser(null)
-
+      setIsLoggedIn(true);
+      setUser({ email: data.email, name: data.name });
     }
   }
 
