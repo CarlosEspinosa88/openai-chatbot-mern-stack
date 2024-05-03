@@ -89,6 +89,7 @@ export const deleteChats = async (
       return res.status(401).send("Permission didn't match")
     }
 
+    //@ts-ignore
     user.chats = []
     user.save()
 
